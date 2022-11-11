@@ -16,3 +16,6 @@ TODO
 
 ### How can you use the block list to block users?
 TODO
+
+### I'm not a lagna why am I on this list?
+TODO
