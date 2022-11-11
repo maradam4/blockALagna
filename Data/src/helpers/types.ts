@@ -6,6 +6,7 @@ export type RawUserData = {
 
 export interface IUserDataWithProps extends RawUserData {
     linkId?: string;
+	link?: string;
 	additionalProps?: additionalProps;
 }
 
