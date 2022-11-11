@@ -84,11 +84,24 @@ export class DataHelpers {
     csv.toDisk(`${__dirname}/../dataFiles/${fileName}.csv`);
   }
 
+  public saveUsernamesToTxt(fileName: string){
+	const usernamesString = this.createStringListOfUsernames()
+	fs.writeFileSync(`${__dirname}/../dataFiles/${fileName}.txt`, usernamesString)
+  }
+
   private calculateLinkById(id: string) {
     return `https://twitter.com/intent/user?user_id=${id}`;
   }
 
   private calculateLinkByUsername(username: string) {
     return `https://twitter.com/${username}`;
+  }
+
+  private createStringListOfUsernames() {
+	const usernames: string[] = []
+	this.userData.forEach(user => {
+		usernames.push(user.username)
+	})
+	return usernames.join('\n');
   }
 }
