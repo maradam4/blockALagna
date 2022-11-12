@@ -29,9 +29,10 @@ describe("helpers", () => {
     describe("users", () => {
       it("should return users array", () => {
         const actual = target.users;
+		const expected = getData()
 
-        expect(actual).toEqual(getData());
-        expect(actual.length).toEqual(getData().length);
+        expect(actual).toEqual(expected);
+        expect(actual.length).toEqual(expected.length);
       });
     });
 
