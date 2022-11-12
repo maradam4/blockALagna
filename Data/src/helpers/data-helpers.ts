@@ -7,7 +7,7 @@ export class DataHelpers {
   private userData: IUserDataWithProps[];
 
   constructor(private data: RawUserData[]) {
-    this.userData = data;
+    this.userData = JSON.parse(JSON.stringify(data));
   }
 
   /**
@@ -16,6 +16,51 @@ export class DataHelpers {
    */
   get users() {
     return this.userData;
+  }
+
+  /**
+   * a get accessor to data length
+   *
+   */
+  get dataSize() {
+    return this.userData.length;
+  }
+  
+  /**
+   * a method to get only a random sample of data
+   *
+   * @param {number|string} sampleSize default is half the original size
+   * @example getRandomSample(50); // get only 50 users
+   * 
+   * @example getRandomSample('50%'); // get 50% of the original size
+   *
+   */
+  public getRandomSample(sampleSize: number | string = this.dataSize / 2) {
+    if (typeof sampleSize === "number" && sampleSize > this.userData.length) {
+      // TODO add logger
+      return;
+    }
+
+    let size = sampleSize;
+    if (typeof sampleSize === "string") {
+      size = this.getPercentageSize(sampleSize);
+	  if (!size) {
+		// TODO add logger
+		return;
+	  }
+    }
+
+    const dataCopy = JSON.parse(JSON.stringify(this.userData));
+    const sample: IUserDataWithProps[] = [];
+
+    for (let n = 0; n < size; n++) {
+      const rndm = this.generateRandomNumber(dataCopy.length);
+
+      sample.push(dataCopy[rndm]);
+      dataCopy.splice(rndm, 1);
+    }
+
+    return sample;
   }
 
   /**
@@ -114,5 +159,14 @@ export class DataHelpers {
       usernames.push(user.username);
     });
     return usernames.join("\n");
+  }
+
+  private generateRandomNumber(range: number) {
+    return Math.floor(Math.random() * range);
+  }
+
+  private getPercentageSize(p: string) {
+    const number = Number(p.replace("%", ""));
+    return Math.floor((number / 100) * this.dataSize);
   }
 }
