@@ -1,4 +1,4 @@
-import fs, { link } from "fs";
+import fs from "fs";
 import ObjectsToCsv from "objects-to-csv";
 
 import { IUserDataWithProps, RawUserData } from "./types";
@@ -21,18 +21,20 @@ export class DataHelpers {
   /**
    * appends a link property with calculated value to current instance of data
    *
+   * @param prop takes a value of link type: linkId (by user id) or link (by username)
+   *
    */
-  public appendLink(prop: 'linkId' | 'link') {
+  public appendLink(prop: "linkId" | "link") {
     switch (prop) {
       case "linkId": {
         this.userData.forEach((user) => {
-          user.linkId = this.calculateLinkById(user.id);
+          user.linkId = this.getLinkById(user.id);
         });
         break;
       }
       case "link": {
         this.userData.forEach((user) => {
-          user.link = this.calculateLinkByUsername(user.username);
+          user.link = this.getLinkByUsername(user.username);
         });
         break;
       }
@@ -47,7 +49,7 @@ export class DataHelpers {
    * @param {keyof RawUserData} value optional: used to calculate value from origional data object
    *
    */
-  public appendAdditionalData(
+  public appendAdditionalProps(
     propName: string,
     callbackFn: Function,
     value?: keyof RawUserData
@@ -84,24 +86,33 @@ export class DataHelpers {
     csv.toDisk(`${__dirname}/../dataFiles/${fileName}.csv`);
   }
 
-  public saveUsernamesToTxt(fileName: string){
-	const usernamesString = this.createStringListOfUsernames()
-	fs.writeFileSync(`${__dirname}/../dataFiles/${fileName}.txt`, usernamesString)
+  /**
+   * save current instance of usernames to text file to dataFiles Folder
+   *
+   * @param {string} fileName name of the file
+   *
+   */
+  public saveUsernamesToTxt(fileName: string) {
+    const usernamesString = this.createStringListOfUsernames();
+    fs.writeFileSync(
+      `${__dirname}/../dataFiles/${fileName}.txt`,
+      usernamesString
+    );
   }
 
-  private calculateLinkById(id: string) {
+  private getLinkById(id: string) {
     return `https://twitter.com/intent/user?user_id=${id}`;
   }
 
-  private calculateLinkByUsername(username: string) {
+  private getLinkByUsername(username: string) {
     return `https://twitter.com/${username}`;
   }
 
   private createStringListOfUsernames() {
-	const usernames: string[] = []
-	this.userData.forEach(user => {
-		usernames.push(user.username)
-	})
-	return usernames.join('\n');
+    const usernames: string[] = [];
+    this.userData.forEach((user) => {
+      usernames.push(user.username);
+    });
+    return usernames.join("\n");
   }
 }
