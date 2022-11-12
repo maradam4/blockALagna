@@ -1,15 +1,16 @@
 import fs from "fs";
 import ObjectsToCsv from "objects-to-csv";
+import { Logger } from "./logger";
 
 import { IUserDataWithProps, RawUserData } from "./types";
 
 export class DataHelpers {
   private userData: IUserDataWithProps[];
-
-  constructor(private data: RawUserData[]) {
+  private logger: Logger;
+  constructor(private data: RawUserData[], private Logger: Logger) {
     this.userData = JSON.parse(JSON.stringify(data));
+    this.logger = Logger;
   }
-
   /**
    * a get accessor to manipulated data
    *
@@ -25,29 +26,29 @@ export class DataHelpers {
   get dataSize() {
     return this.userData.length;
   }
-  
+
   /**
    * a method to get only a random sample of data
    *
    * @param {number|string} sampleSize default is half the original size
    * @example getRandomSample(50); // get only 50 users
-   * 
+   *
    * @example getRandomSample('50%'); // get 50% of the original size
    *
    */
   public getRandomSample(sampleSize: number | string = this.dataSize / 2) {
     if (typeof sampleSize === "number" && sampleSize > this.userData.length) {
-      // TODO add logger
+      this.logger.log(this.logger.sizeError);
       return;
     }
 
     let size = sampleSize;
     if (typeof sampleSize === "string") {
       size = this.getPercentageSize(sampleSize);
-	  if (!size) {
-		// TODO add logger
-		return;
-	  }
+      if (!size) {
+		this.logger.log(this.logger.typeError);
+        return;
+      }
     }
 
     const dataCopy = JSON.parse(JSON.stringify(this.userData));
